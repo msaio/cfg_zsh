@@ -1,0 +1,1 @@
+echo "source \"/home/\$USER/msaio_zsh/init.sh\"" >> "/home/$USER/.zshrc"

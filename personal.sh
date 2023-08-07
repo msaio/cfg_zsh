@@ -1,6 +1,7 @@
 export ZSH_CFG_PATH="/home/$USER/msaio_zsh"
 export ZSHRC_PATH="/home/$USER/.zshrc"
 export NVIM_CFG_PATH="/home/$USER/.config/nvim"
+export NOTE_PATH="/home/$USER/Desktop/sea.txt"
 # export EDITOR=nvim
 # export VISUAL=nvim
 
@@ -75,7 +76,7 @@ alias cfg_zsh=config_zsh
 alias src_zsh="sourcin $ZSHRC_PATH"
 alias sz=src_zsh
 
-alias n='nvim ~/Desktop/sample/note.txt'
+alias n='nvim $NOTE_PATH'
 
 alias rails3000="bundle install && rake db:migrate && rake assets:clobber && rake assets:precompile && rails s -p 3000"
 
@@ -107,3 +108,61 @@ meson_init () {
 rails_flush () {
 	rails db:drop:_unsafe && rails db:create && rails db:migrate && rails db:seed
 }
+
+sync_file_restart() {
+		service resilio-sync restart && \
+		echo "Current user sync file service restarted"
+}
+sync_file_start() {
+		service resilio-sync start && \
+		echo "Current user sync file service started"
+}
+sync_file_stop() {
+		service resilio-sync stop && \
+		echo "Current user sync file service stop"
+}
+
+sync_file() {
+	# https://help.resilio.com/hc/en-us/articles/206178924
+	root="root"
+	if [[ $1 == $root ]]
+	then
+		echo "Hello"
+		service resilio-sync stop && \
+		sudo service resilio-sync restart && \
+		echo "Root 's sync file service restarted"
+	else
+		sudo service resilio-sync stop && \
+		service resilio-sync restart && \
+		echo "Current user sync file service restared"
+	fi
+}
+
+install_rpm (){
+	if [ -z "$1" ]
+	then
+		echo "Need input file, fucker!"
+		return
+	fi
+	sudo alien $1 && \
+	sudo dpkg -i $1
+}
+
+sys_info (){
+	sudo inxi -Fx
+}
+
+extract_vpks() {
+	for file in ./*.vpk; do vpk  -x ./ $file; done
+}
+
+###
+
+fix_dump_sugar (){
+	 sed -i '/@@GLOBAL.GTID_PURGED=/d' $1
+	 sed -i 's/utf8mb4_0900_ai_ci/utf8mb4_general_ci/g' $1
+	 sed -i 's/utf8mb3/utf8/g' $1 
+	 sed -i 's/utf8mb4/utf8/g' $1
+}
+
+
