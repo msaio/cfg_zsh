@@ -2,7 +2,7 @@
 export ZSH_CFG_PATH="/home/$USER/msaio_zsh"
 export ZSHRC_PATH="/home/$USER/.zshrc"
 export NVIM_CFG_PATH="/home/$USER/.config/nvim"
-export NVIM_CFG_PATH_DEFAUT_START="./old_school/personal.vim"
+export NVIM_CFG_PATH_DEFAULT_START="$NVIM_CFG_PATH/old_school/personal.vim"
 export NOTE_PATH="/home/$USER/Desktop/sea.txt"
 # export EDITOR=nvim
 # export VISUAL=nvim
@@ -240,7 +240,9 @@ alias t="tmux attach-session -t $(tmux ls | awk 'NR==1{print substr($1, 1, lengt
 # DEPRECATED
 # alias code="launch_code"
 alias cfg_nvim=config_nvim
+alias cn=cfg_nvim
 alias cfg_zsh=config_zsh
+alias cz=cfg_zsh
 alias src_zsh="sourcin $ZSHRC_PATH"
 alias sz=src_zsh
 alias n='nvim $NOTE_PATH'
