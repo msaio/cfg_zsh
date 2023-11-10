@@ -148,7 +148,7 @@ extract_vpks() {
 }
 
 msaio_ghu (){
-	git add -A && echo "Update: $(date +'%R, %m/%d/%Y')" | git commit -F - && git push -u origin master
+	git add -A && echo "Update: $(date -u +'%R, %m/%d/%Y')" | git commit -F - && git push -u origin master
 }
 
 msaio_ghu_nvim (){
@@ -317,6 +317,5 @@ rails_flush () {
 alias q=exit
 alias nf=new_file
 alias touchf=nf
-alias code=code-insiders
 alias lv_node=latest_version ~/.asdf/installs/nodejs 
 alias sync_snap=sync_snap_app_to_whisker_menu
