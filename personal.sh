@@ -1,7 +1,7 @@
 # --- >>> "ENV" <<< ---
-export ZSH_CFG_PATH="/home/$USER/msaio_zsh"
+export ZSH_CFG_PATH="/home/$USER/cfg_zsh"
 export ZSHRC_PATH="/home/$USER/.zshrc"
-export NVIM_CFG_PATH="/home/$USER/.config/nvim"
+export NVIM_CFG_PATH="/home/$USER/cfg_nvim"
 export NVIM_CFG_PATH_DEFAULT_START="$NVIM_CFG_PATH/old_school/personal.vim"
 export NOTE_PATH="/home/$USER/Desktop/sea.txt"
 alias nvim="/usr/bin/nvim"
@@ -31,11 +31,6 @@ sourcin () {
 	echo  "Sourcin... $1" ; \
 	source $1 && \
 	echo "Done!"
-}
-
-# DEPRECATED: excute this instead > sudo ln -s /usr/bin/code-insiders /usr/bin/code
-launch_code () {
-	code-insiders $*
 }
 
 config_nvim () {
@@ -100,18 +95,16 @@ meson_init () {
 	rm -rf TMP_dir
 }
 
-rails_flush () {
-	rails db:drop:_unsafe && rails db:create && rails db:migrate && rails db:seed
-}
-
 sync_file() {
 	# https://help.resilio.com/hc/en-us/articles/206178924
-	sudo service resilio-sync stop
-	sudo systemctl disable resilio
-	sudo systemctl enable resilio-sync
-	sudo systemctl stop resilio-sync
-	sudo systemctl start resilio-sync
-	sudo systemctl status resilio-sync
+	# Install
+	# sudo apt-get update
+	# sudo apt-get install resilio-sync
+	# sudo usermod -aG $USER rslsync
+	# sudo usermod -aG rslsync $USER
+	# sudo chmod g+rw /home/$USER
+	# systemctl --user enable resilio-sync
+	systemctl --user restart resilio-sync
 }
 
 add_rpm (){
@@ -299,7 +292,6 @@ alias e=edt
 alias lz="~/.asdf/shims/nvim"
 
 alias t="tmux attach-session -t $(tmux ls | awk 'NR==1{print substr($1, 1, length($1)-1)}')"
-# alias code="launch_code" # DEPRECATED
 alias cfg_nvim=config_nvim
 alias cn=cfg_nvim
 alias cfg_zsh=config_zsh
@@ -318,6 +310,10 @@ alias sp_s_log="tail -f log/sidekiq.log -n "
 alias sp_c_rs="clear && rails s -p 4000"
 alias sp_rs="rails s -p 4000"
 
+
+rails_flush () {
+	rails db:drop:_unsafe && rails db:create && rails db:migrate && rails db:seed
+}
 alias q=exit
 alias nf=new_file
 alias touchf=nf
