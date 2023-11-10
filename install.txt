@@ -1,0 +1,110 @@
+# Latest update + upgrade
+sudo apt update -y
+sudo apt upgrade -y
+sudo apt install git curl wget -y
+
+# Install zsh
+sudo apt install zsh -y
+chsh -s $(which zsh)
+
+# Install oh-my-zsh
+sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
+git clone https://github.com/zsh-users/zsh-autosuggestions.git $ZSH_CUSTOM/plugins/zsh-autosuggestions
+git clone https://github.com/zsh-users/zsh-syntax-highlighting.git $ZSH_CUSTOM/plugins/zsh-syntax-highlighting
+git clone https://github.com/zdharma-continuum/fast-syntax-highlighting.git ${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/plugins/fast-syntax-highlighting
+git clone --depth 1 -- https://github.com/marlonrichert/zsh-autocomplete.git $ZSH_CUSTOM/plugins/zsh-autocomplete
+echo "plugins+=(zsh-autosuggestions zsh-syntax-highlighting fast-syntax-highlighting zsh-autocomplete)" >> ~/.zshrc
+# Fix
+# > compaudit
+# > sudo chown -R  username:root target_directory
+# > sudo chmod -R 755 target_directory
+
+# Install fonts
+mkdir -p ~/.local/share/fonts
+cd ~/.local/share/fonts
+font_urls=(
+  "https://github.com/ryanoasis/nerd-fonts/raw/HEAD/patched-fonts/DejaVuSansMono/Regular/DejaVuSansMNerdFont-Regular.ttf"
+  "https://github.com/ryanoasis/nerd-fonts/raw/HEAD/patched-fonts/DejaVuSansMono/Regular/DejaVuSansMNerdFontMono-Regular.ttf"
+  "https://github.com/ryanoasis/nerd-fonts/raw/HEAD/patched-fonts/DejaVuSansMono/Regular/DejaVuSansMNerdFontPropo-Regular.ttf"
+)
+for url in "${font_urls[@]}"; do
+  curl -fLO "$url"
+done
+cd
+
+# Install powerlever10k theme
+git clone --depth=1 https://github.com/romkatv/powerlevel10k.git ${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/themes/powerlevel10k
+sed -i '/ZSH_THEME="/d' ~/.zshrc
+echo 'ZSH_THEME="powerlevel10k/powerlevel10k"' >> ~/.zshrc
+source ~/.zshrc
+
+# Install asdf
+git clone https://github.com/asdf-vm/asdf.git ~/.asdf
+echo '. "$HOME/.asdf/asdf.sh"' >> ~/.zshrc
+source ~/.zshrc
+
+# Install neovim
+sudo apt install neovim -y
+sudo apt install lua5.4 -y
+asdf plugin add nodejs
+asdf install nodejs latest
+asdf global nodejs latest
+
+# Install tmux
+sudo apt install tmux -y
+
+# Install fzf
+sudo apt-get install silversearcher-ag -y
+sudo apt-get install ripgrep -y
+git clone --depth 1 https://github.com/junegunn/fzf.git ~/.fzf
+~/.fzf/install
+
+# Install IDE
+cd
+sh -c 'curl -fLo "${XDG_DATA_HOME:-$HOME/.local/share}"/nvim/site/autoload/plug.vim --create-dirs \
+       https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim'
+git clone https://github.com/msaio/cfg_nvim
+ln -s ~/cfg_nvim ~/.config/nvim
+nvim +PlugInstall +qall
+nvim +CocInstall\ coc-prettier\ coc-html\ coc-yaml\ coc-xml\ coc-tsserver\ coc-sql\ coc-solargraph\ coc-sh\ coc-lua\ coc-go\ coc-json +qall
+
+cd
+git clone https://github.com/msaio/cfg_zsh
+echo 'source "$HOME/cfg_zsh/init.sh"' >> ~/.zshrc
+ln ~/.zshrc ~/cfg_zsh/.zshrc
+
+git clone https://github.com/gpakosz/.tmux.git
+ln -s -f .tmux/.tmux.conf
+cp .tmux/.tmux.conf.local .
+mv ~/.tmux.conf.local ~/.tmux.conf.local.bk
+ln ~/cfg_zsh/tmux.conf ~/.tmux.conf.local
+
+# install backup kde theme
+sudo apt install python3 python-is-python3 pip pipx -y
+pipx install konsave
+tee -a ~/.zshrc  <<EOF
+if [ -d "\$HOME/.local/bin" ]; then
+	PATH="\$HOME/.local/bin:\$PATH"
+fi
+EOF
+
+# Massive zsh history
+tee -a ~/.zshrc <<EOF
+HISTFILE=~/.zsh_history
+HISTSIZE=999999999
+SAVEHIST=\$HISTSIZE
+EOF
+
+# Install flatpak
+sudo apt install flatpak -y
+echo '\nexport XDG_DATA_DIRS="/var/lib/flatpak/exports/share:$HOME/.local/share/flatpak/exports/share:$XDG_DATA_DIRS"' >> ~/.zshrc
+flatpak remote-add --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo
+flatpak install flathub
+
+# Install go
+asdf plugin add golang https://github.com/asdf-community/asdf-golang.git
+asdf install golang latest
+asdf global golang latest
+
+# Install docker
+

@@ -237,44 +237,10 @@ flush_chrome(){
 	echo "Done!"
 }
 
-latest_version(){
-	if [ -z "$1" ]
-		folder_path="$1"
-	then
-		folder_path="."
-	fi
-	latest_version=""
-	latest_folder=""
-	for dir in "$folder_path"/*; do
-		if [ -d "$dir" ]; then
-			folder_name=$(basename "$dir")
-			if [[ $folder_name =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
-				if [[ "$folder_name" > "$latest_version" ]]; then
-					latest_version="$folder_name"
-					latest_folder="$dir"
-				fi
-			fi
-		fi
-	done
-	if [ -n "$latest_folder" ]; then
-		echo "$latest_version"
-	else
-		echo "No version folders found in the specified directory."
-		return 1 
-	fi
-}
-
-sync_snap_app_to_whisker_menu(){
-	whisker_desktops_path="/usr/share/applications"
-	snap_desktops_path="/var/lib/snapd/desktop/applications"
-	exclude_file="mimeinfo.cache"
-	file_list=()
-	find "$snap_desktops_path" -type f -not -name "$exclude_file" -print | while read -r file; do
-		file_list+=("$(basename "$file")")
-	done
-	for file in "${file_list[@]}"; do
-		sudo ln "$snap_desktops_path/$file" "$whisker_desktops_path/"
-	done
+flush_thorium(){
+	echo "Flushin... Thorium" && \
+	flush_browsers "thorium" && \
+	echo "Done!"
 }
 
 # --- >>> "TMP" <<< ---
@@ -317,5 +283,4 @@ rails_flush () {
 alias q=exit
 alias nf=new_file
 alias touchf=nf
-alias lv_node=latest_version ~/.asdf/installs/nodejs 
 alias sync_snap=sync_snap_app_to_whisker_menu
