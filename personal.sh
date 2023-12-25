@@ -1,12 +1,14 @@
 # --- >>> "ENV" <<< ---
-export ZSH_CFG_PATH="/home/$USER/cfg_zsh"
-export ZSHRC_PATH="/home/$USER/.zshrc"
-export NVIM_CFG_PATH="/home/$USER/cfg_nvim"
+export ZSH_CFG_PATH="$HOME/cfg_zsh"
+export ZSHRC_PATH="$HOME/.zshrc"
+export BASHRC_PATH="$HOME/.bashrc"
+export NVIM_CFG_PATH="$HOME/cfg_nvim"
 export NVIM_CFG_PATH_DEFAULT_START="$NVIM_CFG_PATH/old_school/personal.vim"
-export NOTE_PATH="/home/$USER/Desktop/sea.txt"
+export NOTE_PATH="$HOME/Desktop/sea.txt"
 alias nvim="/usr/bin/nvim"
 export EDITOR="/usr/bin/nvim"
 export VISUAL="/usr/bin/nvim"
+export TIL_PATH="$HOME/til/"
 
 # --- >>> "HELPERS" <<< ---
 check_if_exist () {
@@ -33,10 +35,18 @@ sourcin () {
 	echo "Done!"
 }
 
+today_i_learned () {
+	current_dir=$(pwd) ; \
+	cd $TIL_PATH ; \
+	resume_or_new_nvim ; \
+	echo "That s what i learned today from now!" ; \
+	cd $current_dir
+}
+
 config_nvim () {
 	current_dir=$(pwd) ; \
 	cd $NVIM_CFG_PATH ; \
-	nvim $NVIM_CFG_PATH_DEFAULT_START ; \
+  resume_or_new_nvim $NVIM_CFG_PATH_DEFAULT_START ; \
 	nvim +source\ $NVIM_CFG_PATH/init.lua +PlugInstall +qall! ; \
 	echo "Nvim updated!" ;
 	echo "return to $current_dir" ; \
@@ -47,8 +57,14 @@ config_zsh () {
 	current_dir=$(pwd) ; \
 	cd $ZSH_CFG_PATH ; \
 	echo "$ZSH_CFG_PATH"
-	resume_or_new_nvim ./personal.sh ; \
-	sourcin $ZSHRC_PATH ; \
+	resume_or_new_nvim ./personal.sh
+  current_shell=$(ps -p $$ -o 'comm=')
+  if [[ $current_shell = "zsh" ]]
+  then
+    sourcin $ZSHRC_PATH
+  else
+    sourcin $BASHRC_PATH
+  fi
 	echo "return to $current_dir" ; \
 	cd $current_dir
 }
@@ -144,11 +160,15 @@ sys_info (){
 }
 
 extract_vpks() {
-	for file in ./*.vpk; do vpk  -x ./ $file; done
+	for file in ./*.vpk; do
+		vpk  -x ./ $file;
+	done
 }
 
 msaio_ghu (){
-	git add -A && echo "Update: $(date -u +'%R, %m/%d/%Y')" | git commit -F - && git push -u origin master
+	git add -A && echo "Update: $(date -u +'%R, %m/%d/%Y')" | \
+	git commit -F - && \
+  git push -u origin master
 }
 
 msaio_ghu_nvim (){
@@ -210,6 +230,7 @@ clone_src(){
 new_file(){
 	# https://github.com/tanrax/terminal-AdvancedNewFile
 	# > pip3 install --user advance-touch
+  # allow to create files via path (auto create dir)
 	ad $1
 }
 
@@ -243,6 +264,13 @@ flush_thorium(){
 	echo "Done!"
 }
 
+ultimate_fix_ssh(){
+  YOURUSER=$(whoami)
+  sudo chown $YOURUSER:$YOURUSER /home/$YOURUSER/{.,.ssh/,.ssh/authorized_keys}
+  sudo chmod u+rwX,go-rwX,-t /home/$YOURUSER/{.ssh/,.ssh/authorized_keys}
+  sudo chmod go-w /home/$YOURUSER/
+}
+
 # --- >>> "TMP" <<< ---
 fix_dump_sugar (){
 	 sed -i '/@@GLOBAL.GTID_PURGED=/d' $1
@@ -251,36 +279,48 @@ fix_dump_sugar (){
 	 sed -i 's/utf8mb4/utf8/g' $1
 }
 
-
 # --- >>> "ALIAS" <<< ---
-alias edt=resume_or_new_nvim
-alias e=edt
+alias edt="resume_or_new_nvim"
+alias e="edt"
+alias pe="nvim -u NONE"
 alias lz="~/.asdf/shims/nvim"
+alias plz="lz -u NONE"
+alias cfg_nvim="config_nvim"
+alias cn="cfg_nvim"
+
+alias n='nvim $NOTE_PATH'
+
+alias cfg_zsh="config_zsh"
+alias cz="cfg_zsh"
+alias src_zsh="sourcin $ZSHRC_PATH"
+alias sz="src_zsh"
 
 alias t="tmux attach-session -t $(tmux ls | awk 'NR==1{print substr($1, 1, length($1)-1)}')"
-alias cfg_nvim=config_nvim
-alias cn=cfg_nvim
-alias cfg_zsh=config_zsh
-alias cz=cfg_zsh
-alias src_zsh="sourcin $ZSHRC_PATH"
-alias sz=src_zsh
-alias n='nvim $NOTE_PATH'
-alias cfg_tmux=config_tmux
+alias cfg_tmux="config_tmux"
 alias ct=cfg_tmux
 # still need to reload with: <prefix>+r
+alias tbtx="tmux show-buffer | xclip -selection clipboard"
 
-# QUICK
+alias advanced_history="fc -li 100"
+alias ah="advanced_history"
+
+alias til="today_i_learned"
+
+alias q=exit
+
+alias nf=new_file
+alias touchf=nf
+
+alias sb="source ~/.bashrc"
+
+# SUPER_QUICK
 alias rails3000="bundle install && rake db:migrate && rake assets:clobber && rake assets:precompile && rails s -p 3000"
 alias sp_s="bundle exec sidekiq -C config/sidekiq.yml"
 alias sp_s_log="tail -f log/sidekiq.log -n "
 alias sp_c_rs="clear && rails s -p 4000"
 alias sp_rs="rails s -p 4000"
 
-
 rails_flush () {
 	rails db:drop:_unsafe && rails db:create && rails db:migrate && rails db:seed
 }
-alias q=exit
-alias nf=new_file
-alias touchf=nf
-alias sync_snap=sync_snap_app_to_whisker_menu
+

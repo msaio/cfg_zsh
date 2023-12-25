@@ -73,15 +73,18 @@ cd
 sh -c 'curl -fLo "${XDG_DATA_HOME:-$HOME/.local/share}"/nvim/site/autoload/plug.vim --create-dirs \
        https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim'
 git clone https://github.com/msaio/cfg_nvim
-ln -s ~/cfg_nvim ~/.config/nvim
+ln -s -f ~/cfg_nvim ~/.config/nvim
 nvim +PlugInstall +qall
 nvim +CocInstall\ coc-prettier\ coc-html\ coc-yaml\ coc-xml\ coc-tsserver\ coc-sql\ coc-solargraph\ coc-sh\ coc-lua\ coc-go\ coc-json +qall
 
 cd
 git clone https://github.com/msaio/cfg_zsh
 echo 'source "$HOME/cfg_zsh/init.sh"' >> ~/.zshrc
-ln ~/.zshrc ~/cfg_zsh/.zshrc
+# ln -s -f ~/.zshrc ~/cfg_zsh/.zshrc
+ln -f ~/.zshrc ~/cfg_zsh/.zshrc
 
+cd ~
+rm -rf .tmux .tmux.conf .tmux.conf.local
 git clone https://github.com/gpakosz/.tmux.git
 ln -s -f .tmux/.tmux.conf
 cp .tmux/.tmux.conf.local .
@@ -104,6 +107,9 @@ tee -a ~/.zshrc <<EOF
 HISTFILE=~/.zsh_history
 HISTSIZE=999999999
 SAVEHIST=\$HISTSIZE
+setopt EXTENDED_HISTORY          # Write the history file in the ":start:elapsed;command" format.
+setopt INC_APPEND_HISTORY        # Write to the history file immediately, not when the shell exits.
+setopt SHARE_HISTORY             # Share history between all sessions.
 EOF
 
 # ===========================
@@ -150,14 +156,27 @@ export PATH=\$PATH:\$GOROOT/bin:\$GOPATH/bin
 EOF
 
 # ===========================
-# Install ibus-unikey
+# Install ibus-unikey (works perfect with x11)
 sudo apt install ibus-unikey -y
-tee -a ~/.zshrc <<EOF
+sudo tee -a /etc/environment <<EOF
 
 export GTK_IM_MODULE=ibus
 export XMODIFIERS=@im=ibus
 export QT_IM_MODULE=ibus
 EOF
+
+# ===========================
+# Install fcitx5 (work perfect with wayland, ibus in wayland suck) 
+# https://fcitx-im.org/wiki/Install_Fcitx_5
+sudo apt install fcitx5 fcitx5-unikey -y
+sudo tee -a /etc/environment <<EOF
+
+INPUT_METHOD=fcitx5
+GTK_IM_MODULE=fcitx5
+QT_IM_MODULE=fcitx5
+XMODIFIERS=@im=fcitx5
+EOF
+# Settings -> Virtual Keyboard -> Fcitx5 -> Apply
 
 # ===========================
 # Enable hibernate
@@ -193,6 +212,7 @@ systemctl --user enable resilio-sync
 systemctl --user start resilio-sync
 # http://127.0.0.1:8888
 
+# ===========================
 # Install syncthing
 sudo apt-get install apt-transport-https -y
 sudo apt-get install ca-certificates -y
@@ -206,4 +226,57 @@ echo "deb [signed-by=/usr/share/keyrings/syncthing-archive-keyring.gpg] https://
 sudo apt-get update -y
 sudo apt-get install syncthing -y
 
+# ===========================
+# Install touchegg/touche'/toucheggKDE
+# https://github.com/JoseExposito/touchegg
+# https://github.com/NayamAmarshe/ToucheggKDE
+# https://github.com/JoseExposito/touche
+sudo add-apt-repository ppa:touchegg/stable
+sudo apt update -y
+sudo apt install touchegg -y
 
+# ===========================
+# Install bash-it
+# https://github.com/Bash-it/bash-it
+git clone --depth=1 https://github.com/Bash-it/bash-it.git ~/.bash_it
+~/.bash_it/install.sh
+# Choose N to overwrite all
+# ln -s -f ~/.bashrc ~/cfg_zsh/.bashrc
+ln -f ~/.bashrc ~/cfg_zsh/.bashrc
+echo '. "$HOME/.asdf/asdf.sh"' >> ~/.bashrc
+~/.fzf/install
+echo 'source "$HOME/cfg_zsh/init.sh"' >> ~/.bashrc
+tee -a ~/.bashrc <<EOF
+
+HISTSIZE= 
+HISTFILESIZE=
+HISTTIMEFORMAT="[%F %T] "
+
+export XDG_DATA_DIRS="/var/lib/flatpak/exports/share:\$HOME/.local/share/flatpak/exports/share:\$XDG_DATA_DIRS"
+
+export GOROOT="\$HOME/go"
+export GOPATH="\$HOME/go/packages"
+export PATH=\$PATH:\$GOROOT/bin:\$GOPATH/bin
+EOF
+
+# Add oh-my-posh theme
+# https://ohmyposh.dev/
+curl -s https://ohmyposh.dev/install.sh | bash -s -- -d ~/.local/bin
+tee -a ~/.bashrc <<EOF
+
+eval "\$(oh-my-posh init bash)"
+EOF
+sed -i '/BASH_IT_THEME/c\export BASH_IT_THEME='\''oh-my-posh'\''' ~/.bashrc
+
+# ===========================
+# Install powershel (pwsh) (debian-11, bullseye)
+# https://learn.microsoft.com/en-us/powershell/scripting/install/install-debian?view=powershell-7.4
+sudo apt-get update -y
+sudo apt-get install -y wget
+DEBIAN_VERSION=11
+wget -q https://packages.microsoft.com/config/debian/$DEBIAN_VERSION/packages-microsoft-prod.deb
+sudo dpkg -i packages-microsoft-prod.deb
+rm packages-microsoft-prod.deb
+sudo apt-get update -y
+sudo apt-get install -y powershell
+# > pwsh
