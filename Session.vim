@@ -15,7 +15,7 @@ else
 endif
 badd +297 ./personal.sh
 badd +2 init.sh
-badd +169 install.sh
+badd +167 install.sh
 badd +4 plugins.sh
 badd +1 Session.vim
 badd +1 tmux.conf
@@ -58,12 +58,12 @@ setlocal fdn=20
 setlocal fen
 silent! normal! zE
 let &fdl = &fdl
-let s:l = 1 - ((0 * winheight(0) + 18) / 36)
+let s:l = 168 - ((14 * winheight(0) + 17) / 34)
 if s:l < 1 | let s:l = 1 | endif
 keepjumps exe s:l
 normal! zt
-keepjumps 1
-normal! 0
+keepjumps 168
+normal! 03|
 wincmd w
 argglobal
 if bufexists(fnamemodify("./personal.sh", ":p")) | buffer ./personal.sh | else | edit ./personal.sh | endif
@@ -81,13 +81,14 @@ setlocal fdn=20
 setlocal fen
 silent! normal! zE
 let &fdl = &fdl
-let s:l = 19 - ((15 * winheight(0) + 18) / 36)
+let s:l = 19 - ((14 * winheight(0) + 17) / 34)
 if s:l < 1 | let s:l = 1 | endif
 keepjumps exe s:l
 normal! zt
 keepjumps 19
 normal! 016|
 wincmd w
+2wincmd w
 wincmd =
 tabnext 1
 if exists('s:wipebuf') && len(win_findbuf(s:wipebuf)) == 0 && getbufvar(s:wipebuf, '&buftype') isnot# 'terminal'

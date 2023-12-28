@@ -295,9 +295,11 @@ back_up_kde_settings(){
     echo "https://github.com/Prayag2/konsave"
     return 1
   fi
-
+  bkd="$ZSH_CFG_PATH/kde_settings"
   profile="$(date -u +'utc_%H_%M_%S__%m_%d_%Y')"
-  konsave -s "$profile" && konsave -e "$profile" -d "$ZSH_CFG_PATH/kde_settings" -f
+  konsave -s "$profile" && konsave -e "$profile" -d "$bkd" -f
+  tar -c $bkd | xz -c -9 -T0 > $ZSH_CFG_PATH/kde_settings.tar.xz
+  rm -rf $bkd
 }
 
 # --- >>> "TMP" <<< ---
