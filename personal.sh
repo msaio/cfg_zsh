@@ -11,6 +11,10 @@ export VISUAL="/usr/bin/nvim"
 export TIL_PATH="$HOME/til/"
 
 # --- >>> "HELPERS" <<< ---
+check_if_cli_cmd_exists() {
+  type "$1" &> /dev/null
+}
+
 check_if_exist () {
 	if [[ -f $1 ]]
 	then
@@ -127,7 +131,7 @@ add_rpm (){
 	if [ -z "$1" ]
 	then
 		echo "Need input file, fucker!"
-		return
+		return 1
 	fi
 	sudo chmod +x $1 && \
 	sudo alien -i $1
@@ -147,7 +151,7 @@ add_debs (){
 	if [ -z "$@" ]
 	then
 		echo "Need input files, biatch!"
-		exit 1
+		return 1
 	fi
 	for package in "$@"
 	do
@@ -181,6 +185,13 @@ msaio_ghu_nvim (){
 msaio_ghu_zsh (){
 	current_dir=$(pwd) ; \
 	cd $ZSH_CFG_PATH ; \
+	msaio_ghu ; \
+	cd $current_dir
+}
+
+msaio_ghu_til (){
+	current_dir=$(pwd) ; \
+	cd $TIL_PATH ; \
 	msaio_ghu ; \
 	cd $current_dir
 }
@@ -271,6 +282,24 @@ ultimate_fix_ssh(){
   sudo chmod go-w /home/$YOURUSER/
 }
 
+fix_freezing_panel(){
+  # https://bbs.archlinux.org/viewtopic.php?id=287858
+  killall plasmashell; nohup plasmashell &
+}
+
+back_up_kde_settings(){
+  if check_if_cli_cmd_exists "konsave"; then
+  else
+    echo "Not found 'konsave' command" 
+    echo "Plz install konsave:"
+    echo "https://github.com/Prayag2/konsave"
+    return 1
+  fi
+
+  profile="$(date -u +'utc_%H_%M_%S__%m_%d_%Y')"
+  konsave -s "$profile" && konsave -e "$profile" -d "$ZSH_CFG_PATH/kde_settings" -f
+}
+
 # --- >>> "TMP" <<< ---
 fix_dump_sugar (){
 	 sed -i '/@@GLOBAL.GTID_PURGED=/d' $1
@@ -312,6 +341,10 @@ alias nf=new_file
 alias touchf=nf
 
 alias sb="source ~/.bashrc"
+
+alias ffzp="fix_freezing_panel"
+
+alias bk_kde="back_up_kde_settings"
 
 # SUPER_QUICK
 alias rails3000="bundle install && rake db:migrate && rake assets:clobber && rake assets:precompile && rails s -p 3000"

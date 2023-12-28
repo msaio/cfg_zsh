@@ -160,10 +160,15 @@ EOF
 sudo apt install ibus-unikey -y
 sudo tee -a /etc/environment <<EOF
 
-export GTK_IM_MODULE=ibus
-export XMODIFIERS=@im=ibus
-export QT_IM_MODULE=ibus
+GTK_IM_MODULE=ibus
+XMODIFIERS=@im=ibus
+QT_IM_MODULE=ibus
 EOF
+# or add to .zshrc or .bashrc
+# >
+# export GTK_IM_MODULE=ibus
+# export XMODIFIERS=@im=ibus
+# export QT_IM_MODULE=ibus
 
 # ===========================
 # Install fcitx5 (work perfect with wayland, ibus in wayland suck) 
