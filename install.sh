@@ -285,3 +285,8 @@ rm packages-microsoft-prod.deb
 sudo apt-get update -y
 sudo apt-get install -y powershell
 # > pwsh
+
+# ===========================
+# Global .gitignore
+touch ~/.gitignore
+git config --global core.excludesfile ~/.gitignore
