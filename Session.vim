@@ -13,9 +13,9 @@ if &shortmess =~ 'A'
 else
   set shortmess=aoO
 endif
-badd +7 personal.sh
+badd +42 personal.sh
 badd +2 init.sh
-badd +166 install.sh
+badd +277 install.sh
 badd +4 plugins.sh
 badd +1 Session.vim
 badd +1 tmux.conf
@@ -28,7 +28,19 @@ badd +1 kde_settings/utc_06_20_18__12_28_2023.knsv
 argglobal
 %argdel
 $argadd personal.sh
-edit install.sh
+edit init.sh
+let s:save_splitbelow = &splitbelow
+let s:save_splitright = &splitright
+set splitbelow splitright
+let &splitbelow = s:save_splitbelow
+let &splitright = s:save_splitright
+wincmd t
+let s:save_winminheight = &winminheight
+let s:save_winminwidth = &winminwidth
+set winminheight=0
+set winheight=1
+set winminwidth=0
+set winwidth=1
 argglobal
 balt personal.sh
 setlocal fdm=manual
@@ -41,12 +53,13 @@ setlocal fdn=20
 setlocal fen
 silent! normal! zE
 let &fdl = &fdl
-let s:l = 277 - ((15 * winheight(0) + 12) / 25)
+let s:l = 2 - ((1 * winheight(0) + 27) / 54)
 if s:l < 1 | let s:l = 1 | endif
 keepjumps exe s:l
 normal! zt
-keepjumps 277
-normal! 048|
+keepjumps 2
+normal! 031|
+lcd ~/cfg_zsh
 tabnext 1
 if exists('s:wipebuf') && len(win_findbuf(s:wipebuf)) == 0 && getbufvar(s:wipebuf, '&buftype') isnot# 'terminal'
   silent exe 'bwipe ' . s:wipebuf
@@ -54,6 +67,8 @@ endif
 unlet! s:wipebuf
 set winheight=1 winwidth=20
 let &shortmess = s:shortmess_save
+let &winminheight = s:save_winminheight
+let &winminwidth = s:save_winminwidth
 let s:sx = expand("<sfile>:p:r")."x.vim"
 if filereadable(s:sx)
   exe "source " . fnameescape(s:sx)

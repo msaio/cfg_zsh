@@ -39,14 +39,6 @@ sourcin () {
 	echo "Done!"
 }
 
-today_i_learned () {
-	current_dir=$(pwd) ; \
-	cd $TIL_PATH ; \
-	resume_or_new_nvim ; \
-	echo "That s what i learned today from now!" ; \
-	cd $current_dir
-}
-
 config_nvim () {
 	current_dir=$(pwd) ; \
 	cd $NVIM_CFG_PATH ; \
@@ -189,13 +181,6 @@ msaio_ghu_zsh (){
 	cd $current_dir
 }
 
-msaio_ghu_til (){
-	current_dir=$(pwd) ; \
-	cd $TIL_PATH ; \
-	msaio_ghu ; \
-	cd $current_dir
-}
-
 install_matching_bundler (){
 	gem install bundler -v "$(grep -A 1 "BUNDLED WITH" Gemfile.lock | tail -n 1)"
 }
@@ -334,8 +319,6 @@ alias tbtx="tmux show-buffer | xclip -selection clipboard"
 
 alias advanced_history="fc -li 100"
 alias ah="advanced_history"
-
-alias til="today_i_learned"
 
 alias q=exit
 
