@@ -5,10 +5,14 @@ export BASHRC_PATH="$HOME/.bashrc"
 export NVIM_CFG_PATH="$HOME/cfg_nvim"
 export NVIM_CFG_PATH_DEFAULT_START="$NVIM_CFG_PATH/old_school/personal.vim"
 export NOTE_PATH="$HOME/Desktop/sea.txt"
-alias nvim="/usr/bin/nvim"
-export EDITOR="/usr/bin/nvim"
-export VISUAL="/usr/bin/nvim"
-export TIL_PATH="$HOME/til/"
+
+# alias nvim="/usr/bin/nvim"
+# export EDITOR="/usr/bin/nvim"
+# export VISUAL="/usr/bin/nvim"
+
+alias nvim="/home/nqhai/.asdf/shims/nvim"
+export EDITOR="/home/nqhai/.asdf/shims/nvim"
+export VISUAL="/home/nqhai/.asdf/shims/nvim"
 
 # --- >>> "HELPERS" <<< ---
 check_if_cli_cmd_exists() {
@@ -185,8 +189,21 @@ install_matching_bundler (){
 	gem install bundler -v "$(grep -A 1 "BUNDLED WITH" Gemfile.lock | tail -n 1)"
 }
 
+clean_service_pid (){
+  pid_file="$(pwd)/tmp/pids/server.pid"
+  if [ -e "$pid_file" ]; then
+    echo "Deleting $pid_file"
+    rm "$pid_file"
+    echo "File deleted successfully."
+  else
+    echo "File $pid_file does not exist."
+  fi
+  echo "Can re run server now"
+}
+
 kill_puma (){
 	pkill -9 -f puma
+  clean_service_pid
 }
 
 clone_src(){
@@ -260,6 +277,12 @@ flush_thorium(){
 	echo "Done!"
 }
 
+flush_edge(){
+	echo "Flushin... Edge" && \
+	flush_browsers "edge" && \
+	echo "Done!"
+}
+
 ultimate_fix_ssh(){
   YOURUSER=$(whoami)
   sudo chown $YOURUSER:$YOURUSER /home/$YOURUSER/{.,.ssh/,.ssh/authorized_keys}
@@ -270,6 +293,26 @@ ultimate_fix_ssh(){
 fix_freezing_panel(){
   # https://bbs.archlinux.org/viewtopic.php?id=287858
   killall plasmashell; nohup plasmashell &
+}
+
+copy_to_clipboard_from_file(){
+	if [ -f $1 ];then
+    if check_if_cli_cmd_exists "xclip"; then
+      cat $1 | xclip -selection clipboard  
+    else
+      echo "Plz install xclip"
+      return 1
+    fi
+  else
+		echo "Need input file, fucker!"
+		return 1
+	fi
+  return 0
+}
+
+global_gitignore(){
+  echo $1 >> ~/.gitignore
+  # git config --global core.excludesfile ~/.gitignore
 }
 
 back_up_kde_settings(){
@@ -285,6 +328,19 @@ back_up_kde_settings(){
   konsave -s "$profile" && konsave -e "$profile" -d "$bkd" -f
   tar -c $bkd | xz -c -9 -T0 > $ZSH_CFG_PATH/kde_settings.tar.xz
   rm -rf $bkd
+}
+
+select_postgresql() {
+  if [ -f ".tool-versions" ]; then
+    if grep -q "postgres" ".tool-versions"; then
+      echo "psql from asdf" && \
+      $HOME/.asdf/shims/psql $@
+      return
+    fi
+  fi
+
+  echo "psql from PATH" && \
+  /usr/bin/psql $@
 }
 
 # --- >>> "TMP" <<< ---
@@ -331,6 +387,8 @@ alias ffzp="fix_freezing_panel"
 
 alias bk_kde="back_up_kde_settings"
 
+alias c2c_ff=copy_to_clipboard_from_file
+
 # SUPER_QUICK
 alias rails3000="bundle install && rake db:migrate && rake assets:clobber && rake assets:precompile && rails s -p 3000"
 alias sp_s="bundle exec sidekiq -C config/sidekiq.yml"
@@ -342,3 +400,4 @@ rails_flush () {
 	rails db:drop:_unsafe && rails db:create && rails db:migrate && rails db:seed
 }
 
+alias psql="select_postgresql"
