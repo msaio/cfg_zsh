@@ -6,13 +6,15 @@ export NVIM_CFG_PATH="$HOME/cfg_nvim"
 export NVIM_CFG_PATH_DEFAULT_START="$NVIM_CFG_PATH/old_school/personal.vim"
 export NOTE_PATH="$HOME/Desktop/sea.txt"
 
-# alias nvim="/usr/bin/nvim"
-# export EDITOR="/usr/bin/nvim"
-# export VISUAL="/usr/bin/nvim"
-
-alias nvim="/home/nqhai/.asdf/shims/nvim"
-export EDITOR="/home/nqhai/.asdf/shims/nvim"
-export VISUAL="/home/nqhai/.asdf/shims/nvim"
+if [ "$current_user" == "msaio" ]; then # tuf
+  alias nvim="/usr/bin/nvim"
+  export EDITOR="/usr/bin/nvim"
+  export VISUAL="/usr/bin/nvim"
+elif [ "$current_user" == "nqhai" ]; then # cmc
+  alias nvim="/home/nqhai/.asdf/shims/nvim"
+  export EDITOR="/home/nqhai/.asdf/shims/nvim"
+  export VISUAL="/home/nqhai/.asdf/shims/nvim"
+fi
 
 # --- >>> "HELPERS" <<< ---
 check_if_cli_cmd_exists() {
